@@ -1,0 +1,10 @@
+[project]
+name = "prpulse"
+version = "0.0.1"
+description = "Predict pull-request merge time and delivery risk from public GitHub metadata."
+requires-python = ">=3.11"
+readme = "README.md"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

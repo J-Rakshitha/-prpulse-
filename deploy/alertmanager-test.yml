@@ -1,0 +1,16 @@
+# Local test receiver (host.docker.internal:9999). Not for production.
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: test
+  group_by: [alertname]
+  group_wait: 1s
+  group_interval: 1s
+  repeat_interval: 1h
+
+receivers:
+  - name: test
+    webhook_configs:
+      - url: http://host.docker.internal:9999/
+        send_resolved: false

@@ -1,0 +1,100 @@
+groups:
+  - name: prpulse
+    rules:
+      - alert: WebhookErrorRateHigh
+        expr: |
+          sum(rate(prpulse_webhook_events_total{result="error"}[5m]))
+          /
+          clamp_min(sum(rate(prpulse_webhook_events_total[5m])), 1e-9)
+          > 0.1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Webhook error rate above 10%
+
+      - alert: WebhookAckLatencyP95High
+        expr: |
+          histogram_quantile(0.95,
+            sum by (le) (rate(prpulse_webhook_ack_seconds_bucket[5m]))
+          ) > 1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: p95 webhook ack latency above 1s
+
+      - alert: PredictionLatencyP95High
+        expr: |
+          histogram_quantile(0.95,
+            sum by (le) (rate(prpulse_prediction_latency_seconds_bucket[5m]))
+          ) > 5
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: p95 prediction latency above 5s
+
+      - alert: QueueDepthGrowing
+        expr: prpulse_queue_depth > 100
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: RQ queue depth above 100 for 15m
+
+      - alert: WorkerJobFailureRateHigh
+        expr: |
+          sum(rate(prpulse_worker_jobs_total{result="failed"}[5m]))
+          /
+          clamp_min(sum(rate(prpulse_worker_jobs_total[5m])), 1e-9)
+          > 0.2
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Worker job failure rate above 20%
+
+      - alert: DeadLetterCountHigh
+        expr: prpulse_dead_letter_count > 0
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: Dead-letter jobs present
+
+      - alert: NoWebhookEvents
+        # Silence threshold is exported as prpulse_webhook_silence_seconds (from WEBHOOK_SILENCE_HOURS).
+        expr: |
+          prpulse_installations_count > 0
+          and
+          (time() - prpulse_last_webhook_unixtime) > prpulse_webhook_silence_seconds
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: No webhook events received while installations exist
+
+      - alert: GitHubRateLimitLow
+        expr: prpulse_github_rate_limit_remaining < 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: GitHub API rate limit remaining is low
+
+      - alert: DatabaseUnreachable
+        expr: prpulse_db_up == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: Database unreachable
+
+      - alert: LiveAccuracyStale
+        expr: (time() - prpulse_live_accuracy_updated_unixtime) > 86400
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: Live accuracy gauges not refreshed in 24h

@@ -1,0 +1,36 @@
+{
+  auto_https off
+}
+
+:8080 {
+  # Public API surface only.
+  handle /webhook* {
+    reverse_proxy api:8000
+  }
+  handle /health {
+    reverse_proxy api:8000
+  }
+  handle /predict* {
+    reverse_proxy api:8000
+  }
+  handle /explain* {
+    reverse_proxy api:8000
+  }
+  handle /models {
+    reverse_proxy api:8000
+  }
+
+  # Dashboard behind basic auth. Credentials from env via caddy hash.
+  handle /dashboard* {
+    basic_auth {
+      {$DASHBOARD_USER} {$DASHBOARD_PASSWORD_HASH}
+    }
+    uri strip_prefix /dashboard
+    reverse_proxy dashboard:8501
+  }
+
+  # Default: deny (keeps /metrics and admin off the public port).
+  handle {
+    respond "Not found" 404
+  }
+}

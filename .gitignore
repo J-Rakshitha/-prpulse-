@@ -1,0 +1,52 @@
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+.idea/
+.vscode/
+
+# Secrets and key material
+*.pem
+*.key
+secrets/
+.secrets/
+deploy/slack_url
+deploy/slack_url.local
+
+# Databases and local data (regenerate via collect / migrate)
+data/
+!data/.gitkeep
+*.db
+*.db-*
+logs/
+
+# Model artifacts and feature matrices (regenerate via train / features)
+mlruns/
+*.joblib
+*.pkl
+*.parquet
+artifacts/models/
+artifacts/versions/
+artifacts/registry.json
+
+# Locust / local reports that contain machine-specific runs may stay tracked
+# under reports/*.md; ignore raw CSV dumps from load tests.
+reports/loadtest_raw*.csv
+reports/loadtest_2w*.csv
+reports/*.sql.gz
+reports/backups/
+reports/alert_test_received.json
+reports/alert_payload.json
+artifacts/*.dump
+
+.DS_Store
+Thumbs.db

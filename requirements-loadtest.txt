@@ -1,0 +1,3 @@
+# Optional load-test deps (not installed in the API/worker image).
+-r requirements.txt
+locust==2.42.3

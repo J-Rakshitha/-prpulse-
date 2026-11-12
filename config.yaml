@@ -1,0 +1,69 @@
+# Non-secret settings. Tokens and webhook secrets belong in .env.
+
+lookback_years: 2
+
+database:
+  sqlite_path: data/prpulse.db
+
+logging:
+  level: INFO
+  file: logs/prpulse.log
+
+# Wave 2 (approved): pandas + scikit-learn only. Earlier test repos stay in the DB
+# but are not re-fetched. Do not add numpy/scipy/fastapi/pydantic until approved.
+repos:
+  - pandas-dev/pandas
+  - scikit-learn/scikit-learn
+
+collection:
+  initial_repo_limit: 2
+  per_page: 100
+  workers: 8
+  # Commit after this many PR fetches so a crash loses at most one batch.
+  progress_every: 100
+  # Probe this many newest PRs missing CI before choosing the head_sha backfill cap.
+  ci_backfill_sample_size: 200
+  # Safety ceiling while measuring sample cost (head SHA, then newer commits).
+  ci_backfill_sample_max_shas: 10
+  # If sample avg calls/PR > this, full backfill uses at most this many SHAs.
+  ci_backfill_call_cap_threshold: 3
+  # Stop sample/full backfill after this many consecutive misses (retention cliff).
+  ci_backfill_stop_after_misses: 100
+
+thresholds:
+  merged_within_days: 7
+  stage_b_offset_minutes: 30
+  stage_c_offset_minutes: 120
+  revert_window_days: 30
+
+ci:
+  failure_conclusions:
+    - failure
+    - timed_out
+  # Conclusions that make ci_label_available = 1 (usable CI targets).
+  label_conclusions:
+    - success
+    - failure
+    - timed_out
+
+split:
+  train_fraction: 0.70
+  validation_fraction: 0.15
+  test_fraction: 0.15
+
+timing:
+  friday_evening_start_hour_utc: 15
+
+bots:
+  author_logins:
+    - dependabot[bot]
+    - renovate[bot]
+  extra_logins:
+    - github-actions
+    - github-actions[bot]
+    - pre-commit-ci
+    - pre-commit-ci[bot]
+    - copilot
+    - copilot-swe-agent[bot]
+    - allcontributors
+    - allcontributors[bot]

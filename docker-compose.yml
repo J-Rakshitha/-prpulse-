@@ -1,0 +1,159 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: prpulse
+      POSTGRES_PASSWORD: prpulse
+      POSTGRES_DB: prpulse
+    volumes:
+      - prpulse_pg:/var/lib/postgresql/data
+    ports:
+      # Host 5433 avoids clashing with a local Postgres that may already own 5432.
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U prpulse -d prpulse"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: .
+    # Production path: API is internal-only; public traffic goes through proxy:8080.
+    # (No host port published.)
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://prpulse:prpulse@postgres:5432/prpulse
+      REDIS_URL: redis://redis:6379/0
+      PRPULSE_AUTH_MODE: ${PRPULSE_AUTH_MODE:-pat}
+      PRPULSE_REQUIRE_MODELS: ${PRPULSE_REQUIRE_MODELS:-1}
+      PRPULSE_ADMIN_TOKEN: ${PRPULSE_ADMIN_TOKEN:-}
+      WEBHOOK_SILENCE_HOURS: ${WEBHOOK_SILENCE_HOURS:-24}
+      PAYLOAD_RETENTION_DAYS: ${PAYLOAD_RETENTION_DAYS:-90}
+    volumes:
+      - ./data:/app/data
+      - ./artifacts:/app/artifacts
+      - ./reports:/app/reports
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: ["python", "-m", "uvicorn", "src.service.api:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]
+
+  worker:
+    build: .
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://prpulse:prpulse@postgres:5432/prpulse
+      REDIS_URL: redis://redis:6379/0
+      PRPULSE_AUTH_MODE: ${PRPULSE_AUTH_MODE:-pat}
+      WEBHOOK_SILENCE_HOURS: ${WEBHOOK_SILENCE_HOURS:-24}
+      PAYLOAD_RETENTION_DAYS: ${PAYLOAD_RETENTION_DAYS:-90}
+    volumes:
+      - ./data:/app/data
+      - ./artifacts:/app/artifacts
+      - ./reports:/app/reports
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: ["python", "-m", "src.service.worker"]
+
+  dashboard:
+    build: .
+    # Dashboard is only reachable via proxy /dashboard (basic auth).
+    environment:
+      DATABASE_URL: postgresql://prpulse:prpulse@postgres:5432/prpulse
+    volumes:
+      - ./data:/app/data
+      - ./artifacts:/app/artifacts
+      - ./reports:/app/reports
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["python", "-m", "streamlit", "run", "src/dashboard/app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+
+  proxy:
+    image: caddy:2
+    ports:
+      - "8080:8080"
+    environment:
+      # Default hash is for password "prpulse" (caddy hash-password). Override in .env.
+      DASHBOARD_USER: ${DASHBOARD_USER:-prpulse}
+      DASHBOARD_PASSWORD_HASH: ${DASHBOARD_PASSWORD_HASH:-$$2a$$14$$RQrK/ZuRR8sZVIx0Kvl8Q.LYEl8cSSZL8ghMR3DZcieVohpGVSZla}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+    depends_on:
+      - api
+      - dashboard
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    volumes:
+      - ./deploy/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./deploy/alerts.yml:/etc/prometheus/alerts.yml:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      - api
+      - alertmanager
+    profiles: ["observability"]
+
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    volumes:
+      - ./deploy/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - ${ALERTMANAGER_SLACK_URL_FILE:-./deploy/slack_url.placeholder}:/etc/alertmanager/slack_url:ro
+    ports:
+      - "9093:9093"
+    command:
+      - "--config.file=/etc/alertmanager/alertmanager.yml"
+    profiles: ["observability"]
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana:/var/lib/grafana/dashboards:ro
+    profiles: ["observability"]
+
+  backup:
+    image: postgres:16-alpine
+    profiles: ["backup"]
+    environment:
+      DATABASE_URL: postgresql://prpulse:prpulse@postgres:5432/prpulse
+      BACKUP_DIR: /backups
+      BACKUP_RETENTION_DAYS: ${BACKUP_RETENTION_DAYS:-7}
+      BACKUP_INTERVAL_SECONDS: ${BACKUP_INTERVAL_SECONDS:-86400}
+    volumes:
+      - ./scripts/backup_postgres.sh:/scripts/backup_postgres.sh:ro
+      - prpulse_backups:/backups
+    depends_on:
+      postgres:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        apk add --no-cache bash >/dev/null
+        while true; do
+          /scripts/backup_postgres.sh || echo "backup failed"
+          sleep "$${BACKUP_INTERVAL_SECONDS:-86400}"
+        done
+
+volumes:
+  prpulse_pg:
+  prpulse_backups:

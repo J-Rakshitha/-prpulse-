@@ -1,0 +1,189 @@
+{
+  "merge": {
+    "A": {
+      "metrics": {
+        "n_train": 4547,
+        "n_val": 974,
+        "n_test": 975,
+        "baseline_mae": 85.78740512820512,
+        "baseline_medae": 21.194444444444446,
+        "model_mae": 84.62284787841118,
+        "model_medae": 36.21730287866047,
+        "pinball_p10": 9.293930829323951,
+        "pinball_p50": 42.04302252285711,
+        "pinball_p90": 42.96638799818765,
+        "interval_coverage_10_90": 0.8635897435897436
+      },
+      "ablations": {
+        "no_author": {
+          "mae": 87.04937228995247,
+          "medae": 34.88137430876936
+        },
+        "no_repo_state": {
+          "mae": 85.98466605188483,
+          "medae": 30.505741727958167
+        }
+      },
+      "bundle_path": "C:\\Users\\akula\\prpulse\\artifacts\\models\\merge_stage_A.joblib"
+    },
+    "B": {
+      "metrics": {
+        "n_train": 4547,
+        "n_val": 974,
+        "n_test": 975,
+        "baseline_mae": 85.78740512820512,
+        "baseline_medae": 21.194444444444446,
+        "model_mae": 77.14760942453296,
+        "model_medae": 29.62794334513447,
+        "pinball_p10": 9.085983580601843,
+        "pinball_p50": 38.35644318239168,
+        "pinball_p90": 48.00555223669834,
+        "interval_coverage_10_90": 0.8338461538461538
+      },
+      "ablations": {},
+      "bundle_path": "C:\\Users\\akula\\prpulse\\artifacts\\models\\merge_stage_B.joblib"
+    },
+    "C": {
+      "metrics": {
+        "n_train": 4547,
+        "n_val": 974,
+        "n_test": 975,
+        "baseline_mae": 85.78740512820512,
+        "baseline_medae": 21.194444444444446,
+        "model_mae": 74.64800619402214,
+        "model_medae": 21.226557726251798,
+        "pinball_p10": 8.97978254783471,
+        "pinball_p50": 37.483083403237366,
+        "pinball_p90": 43.58962434292536,
+        "interval_coverage_10_90": 0.8051282051282052
+      },
+      "ablations": {},
+      "bundle_path": "C:\\Users\\akula\\prpulse\\artifacts\\models\\merge_stage_C.joblib"
+    }
+  },
+  "merged_7d": {
+    "A": {
+      "metrics": {
+        "n_train": 7093,
+        "n_val": 1520,
+        "n_test": 1521,
+        "base_rate_train": 0.5013393486536022,
+        "baseline_brier": 0.24572225474072365,
+        "model_brier": 0.16762673968872635,
+        "baseline_pr_auc": 0.5784506408171114,
+        "model_pr_auc": 0.7677600908266813,
+        "baseline_roc_auc": 0.588303631852019,
+        "model_roc_auc": 0.7994525325790833
+      },
+      "bundle_path": "C:\\Users\\akula\\prpulse\\artifacts\\models\\merged_within_7d_stage_A.joblib"
+    },
+    "B": {
+      "metrics": {
+        "n_train": 7093,
+        "n_val": 1520,
+        "n_test": 1521,
+        "base_rate_train": 0.5013393486536022,
+        "baseline_brier": 0.24572225474072365,
+        "model_brier": 0.1549459547209886,
+        "baseline_pr_auc": 0.5784506408171114,
+        "model_pr_auc": 0.8627469089914577,
+        "baseline_roc_auc": 0.588303631852019,
+        "model_roc_auc": 0.8593017404431796
+      },
+      "bundle_path": "C:\\Users\\akula\\prpulse\\artifacts\\models\\merged_within_7d_stage_B.joblib"
+    },
+    "C": {
+      "metrics": {
+        "n_train": 7093,
+        "n_val": 1520,
+        "n_test": 1521,
+        "base_rate_train": 0.5013393486536022,
+        "baseline_brier": 0.24572225474072365,
+        "model_brier": 0.14473307229594232,
+        "baseline_pr_auc": 0.5784506408171114,
+        "model_pr_auc": 0.8766611429471064,
+        "baseline_roc_auc": 0.588303631852019,
+        "model_roc_auc": 0.8725381318433427
+      },
+      "bundle_path": "C:\\Users\\akula\\prpulse\\artifacts\\models\\merged_within_7d_stage_C.joblib"
+    }
+  },
+  "ci_fail": {
+    "A": {
+      "metrics": {
+        "n_train": 5272,
+        "n_val": 1129,
+        "n_test": 1131,
+        "base_rate_train": 0.009294385432473445,
+        "baseline_brier": 0.0009881573065924753,
+        "model_brier": 0.0009332940367423126,
+        "baseline_pr_auc": 0.0008841732979664014,
+        "model_pr_auc": 0.0009891196834817012,
+        "baseline_roc_auc": 0.09557522123893808,
+        "model_roc_auc": 0.5522123893805311
+      },
+      "bundle_path": "C:\\Users\\akula\\prpulse\\artifacts\\models\\ci_failed_first_run_stage_A.joblib"
+    },
+    "B": {
+      "metrics": {
+        "n_train": 5272,
+        "n_val": 1129,
+        "n_test": 1131,
+        "base_rate_train": 0.009294385432473445,
+        "baseline_brier": 0.0009881573065924753,
+        "model_brier": 0.0009003916554259309,
+        "baseline_pr_auc": 0.0008841732979664014,
+        "model_pr_auc": 0.0008841732979664014,
+        "baseline_roc_auc": 0.09557522123893808,
+        "model_roc_auc": 0.03584070796460176
+      },
+      "bundle_path": "C:\\Users\\akula\\prpulse\\artifacts\\models\\ci_failed_first_run_stage_B.joblib"
+    },
+    "C": {
+      "metrics": {
+        "n_train": 5272,
+        "n_val": 1129,
+        "n_test": 1131,
+        "base_rate_train": 0.009294385432473445,
+        "baseline_brier": 0.0009881573065924753,
+        "model_brier": 0.0008963827393185166,
+        "baseline_pr_auc": 0.0008841732979664014,
+        "model_pr_auc": 0.0008841732979664014,
+        "baseline_roc_auc": 0.09557522123893808,
+        "model_roc_auc": 0.08185840707964603
+      },
+      "bundle_path": "C:\\Users\\akula\\prpulse\\artifacts\\models\\ci_failed_first_run_stage_C.joblib"
+    }
+  },
+  "ci_duration": {
+    "A": {
+      "metrics": {
+        "n_train": 4959,
+        "n_test": 1064,
+        "baseline_mae": 0.0612625313283208,
+        "baseline_medae": 0.0,
+        "model_mae": 3.1885027741047005,
+        "model_medae": 2.909934324246939,
+        "interval_coverage_10_90": 0.9642857142857143
+      },
+      "bundle_path": "C:\\Users\\akula\\prpulse\\artifacts\\models\\ci_duration_stage_A.joblib"
+    }
+  },
+  "leakage_ablation_lines": [
+    "",
+    "Same time split as training. Collection-time columns = draft + `pr_files` approx size/paths/module history.",
+    "`commits_at_open` is kept in variant 2 (commits with `committed_at <= created_at`).",
+    "",
+    "Merge baseline MAE=`85.79` MedAE=`21.19`. Classifier baseline PR-AUC=`0.578`.",
+    "",
+    "| Variant | n_feat | Merge MAE | Merge MedAE | merged_7d PR-AUC |",
+    "| --- | ---: | ---: | ---: | ---: |",
+    "| `1_all` | 32 | 80.77 | 30.66 | 0.875 |",
+    "| `2_no_collection_time` | 16 | 84.62 | 36.22 | 0.768 |",
+    "| `3_no_author` | 26 | 84.62 | 35.19 | 0.721 |",
+    "| `4_no_repo_state` | 28 | 81.84 | 31.88 | 0.880 |",
+    "| `5_author_repo_only` | 10 | 84.50 | 30.65 | 0.778 |",
+    "",
+    "After this ablation, **collection-time size/path/draft columns were removed from model feature lists** (kept in parquet as aux only). Author-history features are PIT-safe (prior PRs only) and remain."
+  ]
+}

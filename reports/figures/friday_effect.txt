@@ -1,0 +1,16 @@
+Friday-Evening Flag Effect Summary (Train Non-Bot Merged PRs)
+Definition: created_at weekday == Friday (4) and UTC hour >= 15
+friday_n=450
+other_n=6046
+friday_median_hours=43.5896
+other_median_hours=25.1501
+friday_iqr_hours=[2.9711, 158.5212]
+other_iqr_hours=[5.6854, 142.1644]
+friday_p90_hours=663.7861
+other_p90_hours=590.8239
+median_diff_hours=+18.4394
+median_ratio=1.7332
+relative_diff_pct=+73.32%
+repo=pandas-dev/pandas friday_n=343 other_n=3925 friday_median_h=17.9586 other_median_h=23.7281 diff_h=-5.7694 ratio=0.7569
+repo=scikit-learn/scikit-learn friday_n=107 other_n=2121 friday_median_h=93.6900 other_median_h=28.7844 diff_h=+64.9056 ratio=3.2549
+recommendation=KEEP

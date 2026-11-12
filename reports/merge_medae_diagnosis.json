@@ -1,0 +1,61 @@
+{
+  "diagnosis": {
+    "n_test": 975,
+    "y_median": 23.07472222222222,
+    "y_p90": 291.6575555555556,
+    "y_p99": 794.0876444444444,
+    "baseline_pred_median": 22.858333333333334,
+    "l2_pred_median": 45.70372126151828,
+    "q50_log_pred_median": 26.400132372064874,
+    "share_y_gt_168h": 0.18153846153846154,
+    "l2_medae_on_y_le_168": 31.08138499942882,
+    "baseline_medae_on_y_le_168": 19.768888888888885,
+    "note": "L2 on log1p optimizes mean squared error in log space, which after expm1 targets something closer to a conditional mean on a skewed scale; the per-repo median baseline directly optimizes absolute error at the median. Heavy right tail (long-lived PRs) inflates squared/log losses toward larger predictions."
+  },
+  "variants": [
+    {
+      "variant": "baseline_per_repo_median",
+      "mae_hours": 85.78740512820512,
+      "medae_hours": 21.194444444444446,
+      "mae_log1p": 1.3963497438862027,
+      "beats_baseline_medae": false
+    },
+    {
+      "variant": "l2_on_log1p_expm1",
+      "mae_hours": 84.62284787841118,
+      "medae_hours": 36.21730287866047,
+      "mae_log1p": 1.3476078083362015,
+      "beats_baseline_medae": false
+    },
+    {
+      "variant": "quantile_p50_on_log1p_expm1",
+      "mae_hours": 84.08604504571422,
+      "medae_hours": 24.503768509029996,
+      "mae_log1p": 1.2593864970958193,
+      "beats_baseline_medae": false
+    },
+    {
+      "variant": "quantile_p50_on_raw_hours",
+      "mae_hours": 82.83982151550903,
+      "medae_hours": 30.267984580133337,
+      "mae_log1p": 1.2910097656216448,
+      "beats_baseline_medae": false
+    },
+    {
+      "variant": "bucket_clf_then_bucket_median_hours",
+      "mae_hours": 97.6583745014245,
+      "medae_hours": 19.064722222222223,
+      "mae_log1p": 1.7320439668851648,
+      "beats_baseline_medae": true,
+      "bucket_accuracy": 0.5415384615384615,
+      "bucket_macro_f1": 0.3464156523341358,
+      "baseline_bucket_accuracy": 0.5056410256410256,
+      "baseline_bucket_macro_f1": 0.28433691820410495
+    }
+  ],
+  "recommendation": {
+    "any_beats_baseline_medae": true,
+    "best_by_medae": "bucket_clf_then_bucket_median_hours",
+    "keep": "bucket_clf_then_bucket_median_hours"
+  }
+}
