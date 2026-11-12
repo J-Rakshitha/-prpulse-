@@ -21,13 +21,12 @@ The code is finished and tested against a mocked GitHub client. These steps are 
 Put `GITHUB_TOKEN` in `.env`. The token needs permission to comment on pull requests in the target repo (classic: `repo`, or `public_repo` for public repos; fine-grained: Pull requests: Read and write, Issues: Read and write, Contents: Read).
 
 **Option B: GitHub App (recommended beyond a trial).**
-This repository does not yet mint App installation tokens. `HttpGitHubClient` in `src/service/bot.py` takes a bearer token, so you would add a small token-minting step first. Create the App now if you want to go this way:
+App JWT + installation tokens are implemented (`PRPULSE_AUTH_MODE=app`). Full registration steps: [`docs/GITHUB_APP.md`](GITHUB_APP.md).
 
-1. GitHub, Settings, Developer settings, GitHub Apps, New GitHub App.
-2. Webhook URL: your public URL plus `/webhook` (see step 4). Webhook secret: the value you will also put in `WEBHOOK_SECRET`.
-3. Repository permissions: Pull requests: Read and write. Issues: Read and write. Contents: Read-only. Actions: Read-only. Metadata: Read-only.
-4. Subscribe to events: Pull request, Workflow run.
-5. Generate a private key, save the `.pem` outside the repo, and put its path in `GITHUB_APP_PRIVATE_KEY_PATH`. Fill `GITHUB_APP_ID` and, after installing the App on the repo, `GITHUB_APP_INSTALLATION_ID`.
+1. Create the App; webhook URL = your public URL + `/webhook`; secret = `WEBHOOK_SECRET`.
+2. Permissions: see `GITHUB_APP.md` (PRs read, comments/issues write, contents read, actions/checks read, metadata read).
+3. Events: `pull_request`, `workflow_run`, `installation`, `installation_repositories`, `ping`.
+4. Save the `.pem` outside the repo; set `GITHUB_APP_ID` and `GITHUB_APP_PRIVATE_KEY_PATH` (or inline PEM). Install the App on the test repo.
 
 ## 3. Secrets in `.env`
 
@@ -42,7 +41,11 @@ Without `WEBHOOK_SECRET` the `/webhook` route answers 503. Without `GITHUB_TOKEN
 
 ## 4. Expose your local server with ngrok
 
-1. Install ngrok and run `ngrok http 8000`.
+**Prefer the short checklist:** [`docs/MANUAL_LIVE_BOT.md`](MANUAL_LIVE_BOT.md).
+
+With Docker Compose the public proxy listens on **8080** (not 8000):
+
+1. Install ngrok and run `ngrok http 8080`.
 2. Copy the `https://....ngrok-free.app` address.
 3. In the repo (Settings, Webhooks, Add webhook) or in the App settings:
    - Payload URL: `https://<ngrok-address>/webhook`
