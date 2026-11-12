@@ -102,11 +102,13 @@ def main() -> None:
     threading.Thread(target=_recovery_loop, args=(db_target, runtime, stop), daemon=True, name="recovery").start()
 
     from redis import Redis
-    from rq import Worker
+    # SimpleWorker runs jobs in-process (no fork). Forked RQ horses hang here when
+    # the job touches loaded sklearn/joblib models under Docker Desktop/WSL.
+    from rq import SimpleWorker
 
-    logger.info("Starting RQ worker on queue %s", runtime.queue_name)
+    logger.info("Starting RQ SimpleWorker on queue %s", runtime.queue_name)
     redis_conn = Redis.from_url(runtime.redis_url)
-    Worker([runtime.queue_name], connection=redis_conn).work(with_scheduler=True)
+    SimpleWorker([runtime.queue_name], connection=redis_conn).work(with_scheduler=True)
 
 
 if __name__ == "__main__":

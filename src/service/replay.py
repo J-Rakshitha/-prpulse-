@@ -34,7 +34,7 @@ def replay_failed(conn, *, delivery_id: str | None = None, limit: int = 50) -> l
         conn.execute(
             """
             UPDATE webhook_deliveries
-            SET status = 'pending', next_attempt_at = NULL, last_error = NULL, updated_at = ?
+            SET status = 'pending', attempts = 0, next_attempt_at = NULL, last_error = NULL, updated_at = ?
             WHERE delivery_id = ?
             """,
             (ts, did),
